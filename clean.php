@@ -58,7 +58,14 @@ foreach ($wps as $dir) {
      */
     echo "STEP2: remove infected code from themes files functions.php \r\n";
     $themes = $dirs = array_filter(glob($dir . '/wp-content/themes/*'), 'is_dir');
-    $regex = '/<\?php.*"wp_vcd".*?\?>/is';
+    $patterns =array(
+      '/<\?php.*"wp_vcd".*?\?>/is',
+      '/<\?php.*wp-tmp\.php.*?\?>/is',
+      '/<\?php.*wp-feed\.php.*?\?>/is',
+      '/<\?php.*wp-vcd\.php.*?\?>/is',
+
+    );
+
     foreach ($themes as $t) {
       $file_name = $t . '/functions.php';
       if (file_exists($file_name)) {
@@ -66,12 +73,15 @@ foreach ($wps as $dir) {
         if ($myfile) {
           $file_content = fread($myfile, filesize($file_name));
           fclose($myfile);
-          $new_content = preg_replace($regex, '', $file_content);
-          if ($new_content != $file_content) {
-            echo " - Rewriting content of $file_name \r\n";
-            $myfile = fopen($file_name, "w");
-            fwrite($myfile, $new_content);
-            fclose($myfile);
+          foreach($patterns as $regex) {
+            $new_content = preg_replace($regex, '', $file_content);
+            if ($new_content != $file_content) {
+              echo " - Rewriting content of $file_name based on regex $regex \r\n";
+              $myfile = fopen($file_name, "w");
+              fwrite($myfile, $new_content);
+              fclose($myfile);
+              $file_content = $new_content;
+            }
           }
         }
         else {

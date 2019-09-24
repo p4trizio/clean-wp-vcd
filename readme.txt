@@ -27,6 +27,8 @@ eg.
 6. Delete clean.php
 7. Run
    $ grep -r -H "wp-vcd"
+   $ grep -r -H "wp-tmp"
+   $ grep -r -H "wp-feed"
    There should not be any results for that search string(except in bash hystory)
 
 How to try it:
